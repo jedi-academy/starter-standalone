@@ -18,6 +18,8 @@ class Welcome extends Application {
 			$result .= $this->parser->parse('category-home', $category, true);
 			$oddrow = ! $oddrow;
 		}
+                $this->data['title'] = 'Diner';
+                $this->data['pagebody'] = 'Welcome to our Diner';
 		$this->data['content'] = $result;
 		$this->render();
 	}
