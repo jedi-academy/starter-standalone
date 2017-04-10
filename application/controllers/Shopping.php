@@ -1,10 +1,13 @@
 <?php
+// Shopping class - render Shopping page.
 class Shopping extends Application {
 
+	// constructor
 	function __construct() {
 		parent::__construct();
 	}
 	
+	// index method
 	public function index() {
 		// What is the user up to?
 		if ($this->session->has_userdata('order'))
@@ -12,6 +15,7 @@ class Shopping extends Application {
 		else $this->summarize();
 	}
 	
+	// pull order data from receipt xml files
 	public function summarize() {
 		// identify all of the order files
 		$this->load->helper('directory');
@@ -26,7 +30,7 @@ class Shopping extends Application {
 				   'number' => $order->number,
 				   'datetime' => $order->datetime,
 				   'total' => $order->total()
-					   );
+					);
 		    }
 	    }
 		$this->data['orders'] = $parms;
@@ -34,6 +38,7 @@ class Shopping extends Application {
 		$this->render('template');  // use the default template
 	}
 	
+	// display receipt details
 	public function examine($which) {
 		$order = new Order ('../data/order' . $which . '.xml');
         $stuff = $order->receipt();
@@ -41,6 +46,7 @@ class Shopping extends Application {
 		$this->render();
 	}
 	
+	// render shopping content
 	public function keep_shopping() {
 		$order = new Order($this->session->userdata('order'));
         $stuff = $order->receipt();
@@ -61,6 +67,7 @@ class Shopping extends Application {
 		$this->render('template-shopping'); 
 	}
 
+	// handle new order
 	public function neworder() {
 		// create a new order if needed
 		if (! $this->session->has_userdata('order')) {
@@ -71,6 +78,8 @@ class Shopping extends Application {
 		$this->keep_shopping();
 	}
 
+	// invoked when the user presses Cancel button to cancel
+	// the order
 	public function cancel() {
 		// Drop any order in progress
 		if ($this->session->has_userdata('order')) {
@@ -80,6 +89,7 @@ class Shopping extends Application {
 		$this->index();
 	}
 	
+	// add new order when the user picks one item
 	public function add($what) {
 		$order = new Order($this->session->userdata('order'));
 		$order->additem($what);
@@ -87,12 +97,15 @@ class Shopping extends Application {
 		redirect('/shopping');
 	}
 	
+	// checkout and update orders / orderitems tables
 	public function checkout() {
 		$order = new Order($this->session->userdata('order'));
 		// ignore invalid requests
-		if (! $order->validate())
+		if (! $order->validate()) {
 			redirect('/shopping');
-		
+		}
+
+		// update orders / orderitems tables
 		$order->save();
 		$this->session->unset_userdata('order');
 		redirect('/shopping');
