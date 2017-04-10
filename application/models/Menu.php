@@ -79,7 +79,7 @@ class Menu extends MY_Model {
     }
 
     // Rules applied to MENU data
-	function rules() {
+    function rules() {
         $config = [
             ['field'=>'id', 'label'=>'Menu code', 'rules'=> 'required|integer'],
             ['field'=>'name', 'label'=>'Item name', 'rules'=> 'required'],
