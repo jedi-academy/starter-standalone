@@ -1,5 +1,6 @@
 <?php
 
+// Order class - wraps functions related to an Order.
 class Order extends CI_Model {
 
 	// constructor
@@ -25,6 +26,7 @@ class Order extends CI_Model {
 		}
 	}
 
+	// add an item to the order
 	public function addItem($which=null) {
 		// ignore empty requests
 		if ($which == null) return;
@@ -38,6 +40,7 @@ class Order extends CI_Model {
 		}
 	}
 	
+	// print receipt
 	public function receipt() {
 		$total = 0;
 		$result = $this->data['pagetitle'] . '  ' . PHP_EOL;
@@ -53,6 +56,7 @@ class Order extends CI_Model {
 		return $result;
 	}
 
+	// calculate total cost
 	public function total() {
 		$total = 0;
 		foreach($this->items as $key => $value) {
@@ -78,8 +82,10 @@ class Order extends CI_Model {
 		// phew - the order is good
 		return true;
 	}
-	
+
+	// save the details of order to xml file and db tables
 	public function save() {
+		$total = 0;
 		// figure out the order to use
 		while ($this->number == 0) {
 			// pick random 3 digit #
@@ -100,9 +106,18 @@ class Order extends CI_Model {
 			$lineitem = $xml->addChild('item');
 			$lineitem->addChild('code',$key);
 			$lineitem->addChild('quantity',$value);
+
+			// update Orderitems table
+			$menu = $this->menu->get($key);
+			$total += $value * $menu->price;
+			$this->factory->addOrderitems($this->number, $key, $value, $menu->name);
 		}
 		
-		// save it
+		// save it to a xml file
 		$xml->asXML('../data/order' . $this->number . '.xml');
+
+		// update Orders table
+		$this->factory->addOrders($this->number, $this->datetime, $total);
 	}
+	
 }

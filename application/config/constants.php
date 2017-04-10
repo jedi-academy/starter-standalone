@@ -3,6 +3,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
+| Use REST client to get port data from our server
+|--------------------------------------------------------------------------
+|
+*/
+define('REST_SERVER', 'http://backend.local:8080');  // the REST server host
+define('REST_PORT', $_SERVER['SERVER_PORT']);   // the port you are running the server on
+
+/*
+|--------------------------------------------------------------------------
 | Display Debug backtrace
 |--------------------------------------------------------------------------
 |
